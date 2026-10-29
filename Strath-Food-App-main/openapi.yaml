@@ -1,0 +1,106 @@
+openapi: 3.0.0
+info:
+  title: Strathmore Cafeteria Ordering System API
+  description: Online food and medical supply ordering platform.
+  version: 1.0.0
+paths:
+  /cafeteria/menu:
+    get:
+      summary: Return available food and integrated medicine listings
+      responses:
+        '200':
+          description: Success
+
+  /cafeteria/orders:
+    post:
+      summary: Create a new student order
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - studentId
+                - items
+              properties:
+                studentId:
+                  type: string
+                  example: std-8842
+                items:
+                  type: array
+                  items:
+                    type: object
+                    required:
+                      - itemId
+                      - itemType
+                      - quantity
+                    properties:
+                      itemId:
+                        type: string
+                        example: med-101
+                      itemType:
+                        type: string
+                        enum: [food, medicine]
+                        example: medicine
+                      quantity:
+                        type: integer
+                        example: 2
+      responses:
+        '201':
+          description: Order created successfully
+
+  /cafeteria/orders/{id}:
+    get:
+      summary: Return order status by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            example: ord-5001
+      responses:
+        '200':
+          description: Success
+        '404':
+          description: Not found
+    patch:
+      summary: Update order status (fulfill or cancel)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            example: ord-5001
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  enum: [pending, fulfilled, cancelled]
+                  example: fulfilled
+      responses:
+        '200':
+          description: Updated successfully
+        '404':
+          description: Not found
+
+  /cafeteria/students/{studentId}/orders:
+      get:
+        summary: Return order history for a specific student
+        parameters:
+          - name: studentId
+            in: path
+            required: true
+            schema:
+              type: string
+              example: std-8842
+        responses:
+          '200':
+            description: Success
